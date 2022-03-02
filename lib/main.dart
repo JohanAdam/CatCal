@@ -72,46 +72,38 @@ class _DaAppState extends State<DaApp> {
             )
           ),
           body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Total is $totalCount'),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Total is $totalCount'
+                  )
+                ),
+              ),
               Expanded(
                 child: FutureBuilder(
                   future: handler.retrieveItems(),
                   builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: snapshot.data?.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Dismissible(
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: const Icon(Icons.delete_forever),
-                            ),
-                            key: ValueKey<int>(snapshot.data![index].id!),
-                            onDismissed: (DismissDirection direction) async {
-                              await handler.deleteItem(snapshot.data![index].id!);
-                              setState(() {
-                                snapshot.data!.remove(snapshot.data![index]);
-                              });
-                            },
-                            child: Card(
-                                child: ListTile(
-                              contentPadding: const EdgeInsets.all(8.0),
-                              title: Text(snapshot.data![index].content)
-                            )),
-                          );
-                        },
-                      );
-                    } else {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      var listLength = snapshot.data?.length;
+                      if (snapshot.hasData && (listLength != null && listLength > 0)) {
+                        return createListView(snapshot);
+                      } else {
+                        return createEmptyLayout();
+                      }
+                    } else if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
-                    }
+                    } else {
+                      return createEmptyLayout();
+                    }                 
                   },
                 ) 
               )
-          ]),
+            ]
+          ),
           floatingActionButton: InkWell(
             splashColor: Colors.red,
             onLongPress: () async {
@@ -133,6 +125,55 @@ class _DaAppState extends State<DaApp> {
             ),
           ),
     );
+  }
+
+  Widget createListView(AsyncSnapshot<List<Item>> snapshot) {
+    return ListView.builder(
+      itemCount: snapshot.data?.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Dismissible(
+          direction: DismissDirection.endToStart,
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: const Icon(Icons.delete_forever),
+          ),
+          key: ValueKey<int>(snapshot.data![index].id!),
+          onDismissed: (DismissDirection direction) async {
+            await handler.deleteItem(snapshot.data![index].id!);
+            setState(() {
+              snapshot.data!.remove(snapshot.data![index]);
+            });
+          },
+          child: Card(
+              child: ListTile(
+            contentPadding: const EdgeInsets.all(8.0),
+            title: Text(snapshot.data![index].content)
+          )),
+        );
+      },
+    );
+  }
+
+  Widget createEmptyLayout() {
+    return Center(
+            child: Wrap(
+              direction: Axis.vertical,
+              spacing: 18,
+              children: [
+                Image.asset(
+                  'assets/box.png',
+                  scale: 4.0,),
+                const Text('The list is empty :(',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold 
+                  )
+                ),
+              ],
+            ),
+          );
   }
 
   // @override
