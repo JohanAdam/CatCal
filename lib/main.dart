@@ -147,9 +147,18 @@ class _DaAppState extends State<DaApp> {
             });
           },
           child: Card(
-              child: ListTile(
-            contentPadding: const EdgeInsets.all(8.0),
-            title: Text(snapshot.data![index].content)
+            child: CheckboxListTile(
+              contentPadding: const EdgeInsets.all(8.0),
+              title: Text(snapshot.data![index].content), 
+              onChanged: (bool? value) async { 
+                var item = snapshot.data![index];
+                item.isCheck = value == true ? 1 : 0;
+                await handler.updateContent(item);
+                setState(() {
+                  print('Settled');
+                });
+               }, 
+              value: snapshot.data![index].isCheck == 0 ? false : true,
           )),
         );
       },

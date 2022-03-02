@@ -75,6 +75,15 @@ class DatabaseHandler {
     return result;
   }
 
+  //Update item and return the last id that inserted.
+  Future<int> updateContent(Item item) async {
+    final Database db = await initializeDB();
+    return await db.update(DB_NAME, 
+      item.toMap(),
+      where: "id = ?",
+      whereArgs: [item.id]);
+  }
+
   //Retrieve all data.
   Future<List<Item>> retrieveItems() async {
     

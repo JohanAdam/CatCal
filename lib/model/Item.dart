@@ -1,8 +1,8 @@
 class Item {
   
-  final int? id;
-  final String content;
-  final int isCheck;
+  int? id;
+  String content;
+  int isCheck;
 
   Item({
     this.id,
