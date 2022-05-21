@@ -9,11 +9,29 @@
             "request": "launch",
             "type": "dart"
         },
+        // {
+        //     "name": "calcat (profile mode)",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "flutterMode": "profile"
+        // }
         {
-            "name": "calcat (profile mode)",
+            "name": "Android",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "deviceId": "android"
+        },
+        {
+            "name": "iPhone",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "iphone"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All Devices",
+            "configurations": ["Android", "iPhone"],
         }
     ]
 }
